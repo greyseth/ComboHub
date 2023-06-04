@@ -1,0 +1,123 @@
+.game-details {
+  margin-top: calc(75px + 2%);
+  width: 100%;
+  height: 300px;
+  display: grid;
+  grid-template-columns: 20% 1fr 1fr;
+  padding: 2%;
+}
+
+.game-details img {
+  aspect-ratio: 9/12;
+  height: 100%;
+  width: auto;
+  margin-right: 15%;
+}
+
+.game-details textarea {
+  resize: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.combos {
+  width: 100%;
+}
+
+.top-buttons {
+  width: 100%;
+  height: 45px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.top-buttons button,
+.top-buttons select {
+  text-align: center;
+  background-color: #4b6587;
+  color: white;
+  font-weight: bold;
+  height: 45px;
+  padding: 10px;
+  border-radius: 15px;
+  border: 2px solid black;
+  transition: 0.5s;
+}
+
+.top-buttons button:hover,
+.top-buttons select:hover {
+  background-color: #232f3f;
+}
+
+.combo-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2%;
+  grid-row-gap: 2%;
+  padding: 2%;
+  list-style: none;
+}
+
+.combo-list li {
+  width: 100%;
+  height: 225px;
+  background-color: #c8c6c6;
+  padding: 15px;
+  border-radius: 25px;
+  transition: 0.5s;
+  margin-bottom: 25px;
+}
+
+.combo-list li p:first-child {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 8%;
+}
+
+.combo-list span {
+  text-decoration: underline;
+  font-size: 0.9rem;
+  color: #4b6587;
+}
+
+.combo-list li p:nth-child(2) {
+  font-size: 1.5rem;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  margin-bottom: 3%;
+}
+
+.combo-list li p:nth-child(3) {
+  font-size: 1.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  margin-bottom: 5%;
+}
+
+.combo-list li div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.combo-list li button {
+  font-size: 1.2rem;
+  width: 60px;
+  height: 30px;
+  border-radius: 25px;
+  border: none;
+}
+
+.combo-list li:hover {
+  cursor: pointer;
+  transform: translateY(-15px);
+}
