@@ -32,6 +32,10 @@ header h1 {
   font-family: tekken;
 }
 
+header h1:hover {
+  cursor: pointer;
+}
+
 header div {
   display: flex;
   align-items: center;

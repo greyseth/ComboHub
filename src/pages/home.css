@@ -103,6 +103,10 @@
   color: #4b6587;
 }
 
+.recent li:hover {
+  cursor: pointer;
+}
+
 .game-title {
   font-weight: bold;
   font-size: 1rem;

@@ -1,0 +1,10 @@
+Database notes:
+
+GAMES:
+ID, Title, img name, description, release date, developer, publisher, characters, combo IDs
+
+COMBOS:
+OP ID, combo title, combo content, description, character, game ID, likes, comments IDs, post date, 
+
+COMMENTS:
+OP ID, comment content, post date, 
