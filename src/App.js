@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import HomePage from "./pages/home";
 import GamePage from "./pages/game";
+import AccountPage from "./pages/account";
 
 const testGameData = [
   {
@@ -39,12 +40,32 @@ const testGameData = [
   },
 ];
 
+const testAccountData = [
+  {
+    id: 0,
+    username: "Greyseth",
+    email: "anargya2gilland@gmail.com",
+    password: "p5572gil",
+    bio: "I want to kill myself",
+    combos: [],
+  },
+  {
+    id: 1,
+    username: "Dummy",
+    email: "dummy@gmail.com",
+    password: "12345",
+    bio: "I am a dummy account",
+    combos: [],
+  },
+];
+
 function App() {
   const [viewGame, setViewGame] = useState(undefined);
   const [viewProfile, setViewProfile] = useState(undefined);
   const [gameForm, setGameForm] = useState(undefined);
   const [comboForm, setComboForm] = useState(undefined);
   const [games, setGames] = useState(testGameData);
+  const [accounts, setAccounts] = useState(testAccountData);
 
   // return <>{!viewGame ? <HomePage /> : null}</>;
   return (
@@ -58,7 +79,13 @@ function App() {
       </header>
 
       {viewGame ? (
-        <GamePage viewGame={viewGame} setViewGame={setViewGame} />
+        <GamePage
+          accounts={accounts}
+          viewGame={viewGame}
+          setViewGame={setViewGame}
+        />
+      ) : viewProfile ? (
+        <AccountPage accounts={accounts} setAccounts={setAccounts} />
       ) : (
         <HomePage games={games} setGames={setGames} setViewGame={setViewGame} />
       )}

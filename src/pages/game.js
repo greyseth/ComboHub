@@ -1,7 +1,7 @@
 import "./styles.css";
 import "./game.css";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const testComboData = [
   {
@@ -73,21 +73,61 @@ const testComboData = [
   },
 ];
 
-function GamePage({ viewGame, setViewGame }) {
+const testCommentData = [
+  {
+    id: 0,
+    poster: 0,
+    combo: 3,
+    content: "AAAAAAAAAAAA",
+  },
+  {
+    id: 1,
+    poster: 1,
+    combo: 2,
+    content: "OOOOOOOOOOOOOOOO",
+  },
+  {
+    id: 2,
+    poster: 0,
+    combo: 4,
+    content: "EEEEEEEEEEEEEEE",
+  },
+  {
+    id: 3,
+    poster: 0,
+    combo: 5,
+    content: "Fuck you and go to hell nerd",
+  },
+];
+
+function GamePage({ accounts, viewGame }) {
   const [combos, setCombos] = useState(testComboData);
   const [viewCombo, setViewCombo] = useState(undefined);
+  const [orderFilter, setOrderFilter] = useState("liked");
+  const [charFilter, setCharFilter] = useState("all");
+  const [isLoading, setLoading] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
 
   return (
     <main>
+      {openForm ? (
+        <ComboForm
+          viewGame={viewGame}
+          setCombos={setCombos}
+          setOpenForm={setOpenForm}
+        />
+      ) : null}
+
       {viewCombo ? (
         <ComboWindow
+          accounts={accounts}
           viewGame={viewGame}
           viewCombo={viewCombo}
           setViewCombo={setViewCombo}
         />
       ) : null}
 
-      <section class="game-details">
+      <section className="game-details">
         <img />
         <div>
           <h3>{viewGame.title}</h3>
@@ -95,78 +135,238 @@ function GamePage({ viewGame, setViewGame }) {
           <p>Developed by {viewGame.developer}</p>
           <p>Published by {viewGame.publisher}</p>
         </div>
-        <textarea>{viewGame.desc}</textarea>
+        <textarea readOnly value={viewGame.desc}></textarea>
       </section>
-      <section class="combos">
-        <div class="top-buttons">
+      <section className="combos">
+        <div className="top-buttons">
           <div>
-            <select value="liked">
-              <option value="liked">Sort by most liked 👍</option>
-              <option value="newest">Sort by newest 🕒</option>
+            <select defaultValue={"liked"}>
+              <option key={"liked"} value="liked">
+                Sort by most liked 👍
+              </option>
+              <option key={"newest"} value="newest">
+                Sort by newest 🕒
+              </option>
             </select>
             <button>Edit details</button>
-            <select value="all">
-              <option value="all">All characters</option>
+            <select
+              onChange={(e) => setCharFilter(e.target.value)}
+              defaultValue={"all"}
+            >
+              <option key={"all"} value="all">
+                All characters
+              </option>
               {viewGame.chars.map((char) => (
-                <option value={char}>{char}</option>
+                <option key={char} value={char}>
+                  {char}
+                </option>
               ))}
             </select>
           </div>
-          <button>+ Add combo</button>
+          <button onClick={() => setOpenForm((form) => !form)}>
+            + Add combo
+          </button>
         </div>
-        <ul class="combo-list">
-          {combos
-            .filter((f) => f.game === viewGame.id)
-            .map((combo) => (
-              <li key={combo.id} onClick={() => setViewCombo(combo)}>
-                <p>
-                  Posted by <span>N/A</span> for character{" "}
-                  <span>{combo.character}</span>
-                </p>
-                <p>{combo.content}</p>
-                <p>{combo.title}</p>
-                <div>
-                  <button>👍 {combo.likes}</button>
-                  <button>🗨️ {combo.comments.length}</button>
-                </div>
-              </li>
-            ))}
+        {(() => {
+          if (!isLoading) {
+            if (
+              charFilter === "all" &&
+              combos.filter((f) => f.game === viewGame.id).length <= 0
+            ) {
+              return (
+                <h2 className="game-message">No combos for this game yet!</h2>
+              );
+            } else if (
+              charFilter !== "all" &&
+              combos.filter(
+                (f) => f.game === viewGame.id && f.character === charFilter
+              ).length <= 0
+            ) {
+              return (
+                <h2 className="game-message">
+                  No combos for {charFilter} yet!
+                </h2>
+              );
+            }
+          } else {
+            return <h2 className="game-message">Loading data...</h2>;
+          }
+        })()}
+        <ul className="combo-list">
+          {(() => {
+            if (charFilter === "all") {
+              return combos
+                .filter((f) => f.game === viewGame.id)
+                .map((combo) => (
+                  <li key={combo.id} onClick={() => setViewCombo(combo)}>
+                    <p>
+                      Posted by <span>N/A</span> for character{" "}
+                      <span>{combo.character}</span>
+                    </p>
+                    <p>{combo.content}</p>
+                    <p>{combo.title}</p>
+                    <div>
+                      <button>👍 {combo.likes}</button>
+                      <button>🗨️ {combo.comments.length}</button>
+                    </div>
+                  </li>
+                ));
+            } else {
+              return combos
+                .filter(
+                  (f) => f.game === viewGame.id && f.character === charFilter
+                )
+                .map((combo) => (
+                  <li key={combo.id} onClick={() => setViewCombo(combo)}>
+                    <p>
+                      Posted by <span>N/A</span> for character{" "}
+                      <span>{combo.character}</span>
+                    </p>
+                    <p>{combo.content}</p>
+                    <p>{combo.title}</p>
+                    <div>
+                      <button>👍 {combo.likes}</button>
+                      <button>🗨️ {combo.comments.length}</button>
+                    </div>
+                  </li>
+                ));
+            }
+          })()}
         </ul>
       </section>
     </main>
   );
 }
 
-function ComboWindow({ viewGame, viewCombo, setViewCombo }) {
+function ComboWindow({ accounts, viewGame, viewCombo, setViewCombo }) {
+  const [commentInput, setCommentInput] = useState("");
+  const [comments, setComments] = useState(testCommentData);
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (event.code === "Enter") {
+        setComments((comm) => [
+          {
+            id: comm.length,
+            poster: 0,
+            combo: viewCombo.id,
+            content: commentInput,
+          },
+          ...comm,
+        ]);
+        console.log(comments);
+
+        setCommentInput(() => "");
+        element.value = "";
+      }
+    };
+
+    const element = ref.current;
+    element.addEventListener("keydown", handler);
+
+    return () => {
+      element.removeEventListener("keydown", handler);
+    };
+  }, [commentInput, comments]);
+
   return (
-    <div class="combo-window">
-      <button class="window-close" onClick={() => setViewCombo(undefined)}>
+    <div className="combo-window">
+      <button className="window-close" onClick={() => setViewCombo(undefined)}>
         Close window
       </button>
-      <div class="combo-container">
+      <div className="combo-container">
         <h1>{viewCombo.content}</h1>
       </div>
-      <div class="combo-footer">
-        <div class="combo-details">
+      <div className="combo-footer">
+        <div className="combo-details">
           <p>{viewCombo.title}</p>
           <p>
             {viewCombo.character} ({viewGame.title})
           </p>
-          <textarea readonly>{viewCombo.desc}</textarea>
+          <textarea readOnly value={viewCombo.desc}></textarea>
           <p>Posted DD/MM/YYYY</p>
         </div>
-        <div>
-          <ul class="comments-list">
-            <li>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos
-                architecto adipisci cumque laudantium facere sequi!
-              </p>
-              <p>Commenter name - DD/MM/YYYY</p>
-            </li>
+        <div className="combo-comments">
+          <ul className="comments-list">
+            {comments.filter((f) => f.combo === viewCombo.id).length <= 0 ? (
+              <li key={"nocom"} className="no-comments">
+                No comments yet!
+              </li>
+            ) : (
+              comments
+                .filter((f) => f.combo === viewCombo.id)
+                .map((comment) => {
+                  return (
+                    <li key={comment.id}>
+                      <p>{comment.content}</p>
+                      <p>
+                        {accounts.find((f) => f.id === comment.poster).username}{" "}
+                        - DD/MM/YYYY
+                      </p>
+                    </li>
+                  );
+                })
+            )}
           </ul>
-          <input placeholder="Add a comment" />
+          <input
+            onInput={(e) => {
+              setCommentInput(e.target.value);
+            }}
+            ref={ref}
+            placeholder="Add a comment"
+          />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ComboForm({ viewGame, setCombos, setOpenForm }) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [comboContent, setComboContent] = useState("");
+  const [character, setCharacter] = useState("");
+
+  async function uploadHandler() {
+    if (!title || !description || !comboContent || !character) {
+      alert("All fields must have a value!");
+      return;
+    }
+  }
+
+  return (
+    <div className="combo-form">
+      <h2>Add your combo</h2>
+      <input
+        type="text"
+        placeholder="Title"
+        id="title-input"
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Combo content"
+        id="content-input"
+        onChange={(e) => setComboContent(e.target.value)}
+      />
+      <textarea
+        placeholder="Combo description"
+        onChange={(e) => setDescription(e.target.value)}
+      ></textarea>
+      <select
+        defaultValue={"noselect"}
+        onChange={(e) => setCharacter(e.target.value)}
+      >
+        <option value={"noselect"}>Select a character</option>
+        {viewGame.chars.map((char) => (
+          <option value={char}>{char}</option>
+        ))}
+      </select>
+      <div>
+        <button onClick={uploadHandler}>Post combo</button>
+        <button onClick={() => setOpenForm(false)}>Cancel</button>
       </div>
     </div>
   );
