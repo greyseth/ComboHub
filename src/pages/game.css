@@ -126,6 +126,7 @@
   width: 100%;
   margin-top: 75px;
   height: calc(100% - 75px);
+  z-index: 8;
   position: fixed;
   top: 0px;
   left: 0px;
@@ -233,4 +234,75 @@
 
 .game-message {
   margin: 3% 0% 3% 5%;
+}
+
+.combo-form {
+  position: fixed;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: #f7f6f2;
+  padding: 3%;
+  padding-top: calc(3% + 75px);
+
+  display: grid;
+  grid-template-columns: 80% 1fr;
+}
+
+.combo-form div:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4%;
+  padding: 2%;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.combo-form input,
+.combo-form textarea {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 15px;
+  padding: 5px;
+  font-size: 1rem;
+  background-color: #f0e5cf;
+  border: 2px solid black;
+}
+
+.combo-form select {
+  padding: 1%;
+  font-size: 1.1rem;
+  border-radius: 15px;
+  background-color: #4b6587;
+  border: 2px solid black;
+  transition: 0.5s;
+  color: white;
+}
+
+.combo-form select:hover {
+  background-color: #232f3f;
+  cursor: pointer;
+}
+
+.combo-form div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4%;
+}
+
+.combo-form button {
+  width: 75%;
+  height: 50px;
+  background-color: #4b6587;
+  border: 2px solid black;
+  font-weight: bold;
+  border-radius: 15px;
+  font-size: 1.2rem;
+  color: white;
 }

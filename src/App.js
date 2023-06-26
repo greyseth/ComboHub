@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+// import client from "./mongo";
 
 import HomePage from "./pages/home";
 import GamePage from "./pages/game";

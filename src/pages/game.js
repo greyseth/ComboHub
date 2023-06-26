@@ -108,11 +108,27 @@ function GamePage({ accounts, viewGame }) {
   const [isLoading, setLoading] = useState(false);
   const [openForm, setOpenForm] = useState(false);
 
+  const handleVote = (e, combo) => {
+    e.stopPropagation();
+
+    const newCombos = combos.slice();
+    newCombos.find((f) => f.id === combo.id).likes++;
+    console.log(newCombos);
+
+    setCombos(() => newCombos);
+    console.log(combos);
+  };
+
+  useEffect(() => {
+    console.log(combos);
+  }, [combos]);
+
   return (
     <main>
       {openForm ? (
         <ComboForm
           viewGame={viewGame}
+          combos={combos}
           setCombos={setCombos}
           setOpenForm={setOpenForm}
         />
@@ -206,7 +222,9 @@ function GamePage({ accounts, viewGame }) {
                     <p>{combo.content}</p>
                     <p>{combo.title}</p>
                     <div>
-                      <button>👍 {combo.likes}</button>
+                      <button onClick={(e) => handleVote(e, combo)}>
+                        👍 {combo.likes}
+                      </button>
                       <button>🗨️ {combo.comments.length}</button>
                     </div>
                   </li>
@@ -225,7 +243,9 @@ function GamePage({ accounts, viewGame }) {
                     <p>{combo.content}</p>
                     <p>{combo.title}</p>
                     <div>
-                      <button>👍 {combo.likes}</button>
+                      <button onClick={(e) => handleVote(e, combo)}>
+                        👍 {combo.likes}
+                      </button>
                       <button>🗨️ {combo.comments.length}</button>
                     </div>
                   </li>
@@ -323,7 +343,7 @@ function ComboWindow({ accounts, viewGame, viewCombo, setViewCombo }) {
   );
 }
 
-function ComboForm({ viewGame, setCombos, setOpenForm }) {
+function ComboForm({ viewGame, combos, setCombos, setOpenForm }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [comboContent, setComboContent] = useState("");
@@ -334,36 +354,57 @@ function ComboForm({ viewGame, setCombos, setOpenForm }) {
       alert("All fields must have a value!");
       return;
     }
+
+    const newData = {
+      id: combos.length,
+      poster: 0,
+      game: viewGame.id,
+      title: title,
+      desc: description,
+      content: comboContent,
+      character: character,
+      likes: 0,
+      comments: [],
+    };
+
+    setCombos((comb) => [newData, ...comb]);
+    setOpenForm(() => false);
   }
 
   return (
     <div className="combo-form">
-      <h2>Add your combo</h2>
-      <input
-        type="text"
-        placeholder="Title"
-        id="title-input"
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Combo content"
-        id="content-input"
-        onChange={(e) => setComboContent(e.target.value)}
-      />
-      <textarea
-        placeholder="Combo description"
-        onChange={(e) => setDescription(e.target.value)}
-      ></textarea>
-      <select
-        defaultValue={"noselect"}
-        onChange={(e) => setCharacter(e.target.value)}
-      >
-        <option value={"noselect"}>Select a character</option>
-        {viewGame.chars.map((char) => (
-          <option value={char}>{char}</option>
-        ))}
-      </select>
+      <div>
+        <h2>Add your combo</h2>
+        <input
+          type="text"
+          placeholder="Title"
+          id="title-input"
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Combo content"
+          id="content-input"
+          onChange={(e) => setComboContent(e.target.value)}
+        />
+        <textarea
+          placeholder="Combo description"
+          onChange={(e) => setDescription(e.target.value)}
+        ></textarea>
+        <select
+          defaultValue={"noselect"}
+          onChange={(e) => setCharacter(e.target.value)}
+        >
+          <option key={"noselect"} value={"noselect"}>
+            Select a character
+          </option>
+          {viewGame.chars.map((char) => (
+            <option key={char} value={char}>
+              {char}
+            </option>
+          ))}
+        </select>
+      </div>
       <div>
         <button onClick={uploadHandler}>Post combo</button>
         <button onClick={() => setOpenForm(false)}>Cancel</button>
